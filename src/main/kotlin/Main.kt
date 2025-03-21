@@ -1,8 +1,10 @@
 package bread_experts_group
 
 import java.net.ServerSocket
-import java.nio.ByteBuffer
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 fun main(args: Array<String>) {
 	val tcp = ServerSocket((args.getOrNull(0) ?: "3002").toInt())
 	println("TCP Socket Addr : ${tcp.localSocketAddress}")
@@ -10,14 +12,14 @@ fun main(args: Array<String>) {
 	while (true) {
 		val socket = tcp.accept()
 		Thread {
-			val buffer = ByteBuffer.allocate(65535)
-			println("CONN TCP : ${socket.localSocketAddress}, ${socket.remoteSocketAddress}")
-			val read = socket.channel.read(buffer)
-			println("RX   TCP : ${socket.localSocketAddress}, ${socket.remoteSocketAddress} ; [${read}]")
-			buffer.flip()
-			val wrote = socket.channel.write(buffer)
-			println("TX   TCP : ${socket.localSocketAddress}, ${socket.remoteSocketAddress} ; [${wrote}]")
-			buffer.clear()
+			val buffer = ByteArray(64000)
+			val rand = Uuid.random()
+			println("CONN TCP : ${socket.localSocketAddress}, ${socket.remoteSocketAddress} ($rand)")
+			val read = socket.inputStream.read(buffer)
+			println("RX   TCP : $rand ; [${read}]")
+			val write = buffer.sliceArray(0..(read - 1))
+			socket.outputStream.write(write)
+			println("TX   TCP : $rand ; [${write.size}]")
 		}.start()
 	}
 }
