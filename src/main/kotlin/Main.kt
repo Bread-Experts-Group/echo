@@ -12,14 +12,20 @@ fun main(args: Array<String>) {
 	while (true) {
 		val socket = tcp.accept()
 		Thread {
-			val buffer = ByteArray(64000)
-			val rand = Uuid.random()
-			println("CONN TCP : ${socket.localSocketAddress}, ${socket.remoteSocketAddress} ($rand)")
-			val read = socket.inputStream.read(buffer)
-			println("RX   TCP : $rand ; [${read}]")
-			val write = buffer.sliceArray(0..(read - 1))
-			socket.outputStream.write(write)
-			println("TX   TCP : $rand ; [${write.size}]")
+			while (true) {
+				val buffer = ByteArray(64000)
+				val rand = Uuid.random()
+				println("CONN TCP : ${socket.localSocketAddress}, ${socket.remoteSocketAddress} ($rand)")
+				val read = socket.inputStream.read(buffer)
+				if (read == -1) {
+					println("DCNN TCP : ${socket.localSocketAddress}, ${socket.remoteSocketAddress} ($rand)")
+					break
+				}
+				println("RX   TCP : $rand ; [${read}]")
+				val write = buffer.sliceArray(0..(read - 1))
+				socket.outputStream.write(write)
+				println("TX   TCP : $rand ; [${write.size}]")
+			}
 		}.start()
 	}
 }
