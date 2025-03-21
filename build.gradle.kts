@@ -1,4 +1,5 @@
 plugins {
+    application
     kotlin("jvm") version "2.1.10"
 }
 
@@ -17,5 +18,9 @@ tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(9)
+}
+
+application {
+    mainClass = "bread_experts_group.MainKt"
 }

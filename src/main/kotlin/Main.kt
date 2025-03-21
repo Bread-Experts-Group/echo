@@ -9,7 +9,7 @@ fun main(args: Array<String>) {
 	println("listening ...")
 	while (true) {
 		val socket = tcp.accept()
-		Thread.ofPlatform().start {
+		Thread {
 			val buffer = ByteBuffer.allocate(65535)
 			println("CONN TCP : ${socket.localSocketAddress}, ${socket.remoteSocketAddress}")
 			val read = socket.channel.read(buffer)
@@ -18,6 +18,6 @@ fun main(args: Array<String>) {
 			val wrote = socket.channel.write(buffer)
 			println("TX   TCP : ${socket.localSocketAddress}, ${socket.remoteSocketAddress} ; [${wrote}]")
 			buffer.clear()
-		}
+		}.start()
 	}
 }
